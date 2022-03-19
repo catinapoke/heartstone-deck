@@ -1,4 +1,6 @@
-﻿namespace Cards
+﻿using Core.Cards;
+
+namespace Cards
 {
     public interface ICardFactory
     {

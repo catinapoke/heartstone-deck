@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Configs;
+using Core.Cards;
+using UnityEngine;
 using Utils.SpriteProvider;
 using Zenject;
 
@@ -7,10 +9,8 @@ namespace Cards.Factory
     public class RandomCardFactory : IFactory<GameObject, Card>
     {
         [Inject] private ISpriteProvider _spriteProvider;
+        [Inject] private RandomCardConfig _config;
 
-        private int _lowBorder = 1;
-        private int _highBorder = 9;
-        
         private string[] names = new[]
         {
             "Hunter",
@@ -53,10 +53,12 @@ namespace Cards.Factory
                 names[index],
                 descriptions[index],
                 _spriteProvider.GetSprite(),
-                UnityEngine.Random.Range(_lowBorder, _highBorder + 1),
-                UnityEngine.Random.Range(_lowBorder, _highBorder + 1),
-                UnityEngine.Random.Range(_lowBorder, _highBorder + 1)
+                RandomAttributeValue(),
+                RandomAttributeValue(),
+                RandomAttributeValue()
             );
+
+            int RandomAttributeValue() => UnityEngine.Random.Range(_config.LowBorder, _config.HighBorder + 1);
         }
     }
 }

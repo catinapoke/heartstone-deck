@@ -11,9 +11,9 @@ namespace Utils
         private float _circleRadius = 0;
         private float _halfAngle;
 
-        public void Init(float horizontalOffset, float verticalOffset)
+        public void Init(float horizontalOffset, float verticalOffset, Vector3 centerOffset)
         {
-            Vector2 origin = transform.position.FromXY();
+            Vector2 origin = (transform.position + centerOffset).FromXY();
             Vector2 one = origin + new Vector2(-horizontalOffset, 0);
             Vector2 two = origin + new Vector2(0, verticalOffset);
             Vector2 three = origin + new Vector2(horizontalOffset, 0);
@@ -65,7 +65,7 @@ namespace Utils
             point.x = (float)(_circleRadius * Math.Sin(angle));
             point.y = (float)(_circleRadius * Math.Cos(angle));
 
-            return new CardPosition(point, new Vector3(0,0, (float)-angle * 180 / (float)Math.PI));
+            return new CardPosition(_circleCenter + point, new Vector3(0,0, (float)-angle * 180 / (float)Math.PI));
         }
 
         private void CircleEquation(Vector2 one, Vector2 two, Vector2 three, out Vector2 center, out float radius)

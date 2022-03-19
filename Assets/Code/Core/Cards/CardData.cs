@@ -1,4 +1,4 @@
-﻿namespace Cards
+﻿namespace Core.Cards
 {
     public enum AttributeType
     {

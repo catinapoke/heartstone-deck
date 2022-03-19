@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Cards;
 using Extensions;
 using ModestTree;
 using TMPro;
@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utils;
 
-namespace Cards
+namespace Core.Cards
 {
     public class Card : MonoBehaviour
     {
