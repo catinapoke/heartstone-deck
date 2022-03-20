@@ -1,4 +1,5 @@
 ﻿using System;
+using Core.Cards;
 using Extensions;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -13,7 +14,7 @@ namespace Utils
 
         public void Init(float horizontalOffset, float verticalOffset, Vector3 centerOffset)
         {
-            Vector2 origin = (transform.position + centerOffset).FromXY();
+            Vector2 origin = (centerOffset).FromXY();
             Vector2 one = origin + new Vector2(-horizontalOffset, 0);
             Vector2 two = origin + new Vector2(0, verticalOffset);
             Vector2 three = origin + new Vector2(horizontalOffset, 0);
@@ -59,8 +60,10 @@ namespace Utils
         
         public CardPosition GetPosition(int index, int pointsCount)
         {
-            double angle = -_halfAngle + 2 * _halfAngle / (pointsCount - 1) * index;
-
+            double angle = pointsCount > 1
+                ? -_halfAngle + 2 * _halfAngle / (pointsCount - 1) * index
+                : angle = 0;
+            
             Vector3 point = Vector3.zero;
             point.x = (float)(_circleRadius * Math.Sin(angle));
             point.y = (float)(_circleRadius * Math.Cos(angle));
@@ -91,18 +94,6 @@ namespace Utils
 
             center = new Vector2((float)-a, (float)-b);
             radius = (float)Math.Sqrt(a * a + b * b - c);
-        }
-    }
-
-    public class CardPosition
-    {
-        public Vector3 Position;
-        public Vector3 Rotation;
-
-        public CardPosition(Vector3 position, Vector3 rotation)
-        {
-            Position = position;
-            Rotation = rotation;
         }
     }
 }

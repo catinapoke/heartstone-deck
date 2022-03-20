@@ -2,11 +2,10 @@
 
 namespace Utils
 {
-    public class IntAttribute
+    public class IntAttribute : IDisposable
     {
         private int _value;
-    
-        public Action<int, int> OnChange;
+        public event Action<int, int> OnChange;
     
         public static implicit operator int(IntAttribute item) => item._value;
         public static implicit operator IntAttribute(int value) => new IntAttribute(value);
@@ -24,6 +23,12 @@ namespace Utils
         public IntAttribute(int value)
         {
             _value = value;
+        }
+
+        public void Dispose()
+        {
+            OnChange = null;
+            _value = default;
         }
     }
 }

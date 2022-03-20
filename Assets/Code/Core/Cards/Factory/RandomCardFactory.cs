@@ -10,6 +10,7 @@ namespace Cards.Factory
     {
         [Inject] private ISpriteProvider _spriteProvider;
         [Inject] private RandomCardConfig _config;
+        [Inject] private DiContainer _container;
 
         private string[] names = new[]
         {
@@ -35,7 +36,8 @@ namespace Cards.Factory
         
         public Card Create(GameObject prefab)
         {
-            GameObject instance = Object.Instantiate(prefab);
+            GameObject instance = _container.InstantiatePrefab(prefab);
+            //GameObject instance = Object.Instantiate(prefab);
             Card card = instance.GetComponent<Card>();
             
             if(card == null)

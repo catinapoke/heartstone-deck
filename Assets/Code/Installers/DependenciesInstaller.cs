@@ -1,50 +1,56 @@
-using Cards;
 using Cards.Factory;
 using Configs;
 using Core.Cards;
+using Core.Decks;
 using Core.Drag;
 using UnityEngine;
-using Utils;
-using Utils.SpriteProvider;
 using Zenject;
 
-public class DependenciesInstaller : MonoInstaller
+namespace Installers
 {
-    [Header("Configs")]
-    [SerializeField] private RandomCardConfig _randomCardConfig;
-    [SerializeField] private CoreGameConfig _coreGameConfig;
-
-    [Header("Core")] 
-    [SerializeField] private CardDragger _cardDragger;
-    [SerializeField] private MouseInputProvider _mouseInput;
-    
-    [Header("Containers")]
-    [SerializeField] private SpriteContainer _spriteContainer;
-    
-    
-    public override void InstallBindings()
+    public class DependenciesInstaller : MonoInstaller
     {
-        BindImageProvider();
-        BindConfigs();
-        BindCoreDependencies();
-    }
+        [Header("Configs")]
+        [SerializeField] private RandomCardConfig _randomCardConfig;
+        [SerializeField] private CoreGameConfig _coreGameConfig;
 
-    private void BindCoreDependencies()
-    {
-        Container.BindIFactory<GameObject, Card>().FromFactory<RandomCardFactory>();
-        Container.Bind(typeof(IInputProvider), typeof(MonoInputProvider)).FromInstance(_mouseInput);
-        Container.Bind<CardDragger>().FromInstance(_cardDragger);
-    }
+        [Header("Core")] 
+        [SerializeField] private CardDragger _cardDragger;
+        [SerializeField] private MouseInputProvider _mouseInput;
+        [SerializeField] private Deck _deck;
+        [SerializeField] private DropPanel _dropPanel;
 
-    private void BindImageProvider()
-    {
-        Container.BindInstance(_spriteContainer);
-        Container.BindInterfacesAndSelfTo<RandomImageProvider>().AsCached();
-    }
+        [Header("Visual")] 
+        [SerializeField] private Material _defaultCardMaterial;
+        [SerializeField] private Material _shinyCardMaterial;
 
-    private void BindConfigs()
-    {
-        Container.BindInstance(_randomCardConfig);
-        Container.BindInstance(_coreGameConfig);
+
+        public override void InstallBindings()
+        {
+            BindConfigs();
+            BindCoreDependencies();
+            BindVisual();
+        }
+
+        private void BindVisual()
+        {
+            Container.BindInstance(_defaultCardMaterial).WithId("DefaultCard");
+            Container.BindInstance(_shinyCardMaterial).WithId("ShinyCard");
+        }
+
+        private void BindCoreDependencies()
+        {
+            Container.BindIFactory<GameObject, Card>().FromFactory<RandomCardFactory>();
+            Container.Bind(typeof(IInputProvider), typeof(MonoInputProvider)).FromInstance(_mouseInput);
+            Container.BindInstance(_cardDragger);
+            Container.BindInstance(_deck);
+            Container.BindInstance(_dropPanel);
+        }
+
+        private void BindConfigs()
+        {
+            Container.BindInstance(_randomCardConfig);
+            Container.BindInstance(_coreGameConfig);
+        }
     }
 }

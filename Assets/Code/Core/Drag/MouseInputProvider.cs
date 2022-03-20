@@ -16,7 +16,11 @@ namespace Core.Drag
 
         public override Vector2 GetPosition()
         {
-            return Input.mousePosition;
+            Vector2 pos = Input.mousePosition;
+
+            pos.x = Mathf.Clamp(pos.x, 0, Screen.width);
+            pos.y = Mathf.Clamp(pos.y, 0, Screen.height);
+            return Input.mousePosition;//pos;// Input.mousePosition;
         }
 
         public override bool IsHolding()

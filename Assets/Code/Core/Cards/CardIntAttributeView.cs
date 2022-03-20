@@ -1,7 +1,11 @@
-﻿using TMPro;
+﻿using System;
+using Configs;
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Utils;
+using Zenject;
 
 namespace Core.Cards
 {
@@ -10,9 +14,17 @@ namespace Core.Cards
     {
         [SerializeField] private Card _card;
         [SerializeField] private AttributeType _attributeType;
+
+        [Inject] private CoreGameConfig _config;
             
         private IntAttribute _attribute;
         private TMP_Text _text;
+        private Tweener tweener;
+
+        public Action OnAnimationFinished;
+        public AttributeType Type => _attributeType;
+        public Tween CurrentAnimation => tweener;
+        public bool IsAnimationComplete => tweener == null || !tweener.active || tweener.IsComplete();
     
         private void Start()
         {
@@ -42,7 +54,13 @@ namespace Core.Cards
 
         private void UpdateText(int from, int to)
         {
-            _text.text = _attribute.Value.ToString();
+            tweener?.Complete();
+            tweener = DOTween.To(x => _text.text = ((int)x).ToString(), from, to, _config.AttributeChangeDuration)
+                .OnComplete(()=>
+                {
+                    _text.text = to.ToString();
+                    OnAnimationFinished?.Invoke();
+                });
         }
     }
 }

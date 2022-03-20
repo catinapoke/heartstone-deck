@@ -26,4 +26,16 @@
             ManaCost = manaCost;
         }
     }
+    
+    public class CardPosition
+    {
+        public UnityEngine.Vector3 Position;
+        public UnityEngine.Vector3 Rotation;
+
+        public CardPosition(UnityEngine.Vector3 position, UnityEngine.Vector3 rotation)
+        {
+            Position = position;
+            Rotation = rotation;
+        }
+    }
 }

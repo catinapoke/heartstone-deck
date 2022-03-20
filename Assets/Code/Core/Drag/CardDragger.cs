@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Configs;
 using Core.Cards;
-using Extensions;
+using Core.Decks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,8 +14,8 @@ namespace Core.Drag
         [SerializeField] private GraphicRaycaster _raycaster;
         
         [Inject] private MonoInputProvider _inputProvider;
-        [Inject] private CoreGameConfig _coreGameConfig;
-        
+        [Inject] private Deck _deck;
+
         private Card currentCard;
         private List<RaycastResult> hits;
 
@@ -37,13 +36,6 @@ namespace Core.Drag
             _inputProvider.OnTouchFinish -= OnTouchFinish;
         }
 
-        private void Update()
-        {
-            if(currentCard == null) return;
-            
-            // move card
-        }
-
         private void OnDrawGizmos()
         {
             if(_inputProvider == null) return;
@@ -56,42 +48,28 @@ namespace Core.Drag
         {
             if (Raycast(_inputProvider.GetPosition(), hits))
             {
-                Card card = GetClosestCard();
-                if(card == null) return;
+                Card card = GetCard();
+                if(card == null || !card.Animator.IsComplete || !_deck.Contains(card)) return;
                 
                 // Check state
                 currentCard = card;
                 Debug.Log($"Picked card: {card.name}");
-                // Change state and start movement
+                currentCard.Animator.FollowPointer(_inputProvider);
+                currentCard.Animator.Glow(true);
             }
             
-            Card GetClosestCard()
+            Card GetCard()
             {
-                int CardDisanceComparison(GameObject x, GameObject y) => x.transform.position.z.CompareTo(y.transform.position.z);
-                
-                Card result = null;
                 foreach (var hit in hits)
                 {
-                    Card temp = hit.gameObject.GetComponent<Card>();
-                    if (temp != null)
+                    Card result = hit.gameObject.GetComponent<Card>();
+                    if (result != null)
                     {
-                        if (result == null)
-                        {
-                            result = temp;
-                            Debug.Log($"init depth = {hit.depth}");
-                        }
-
-
-                        if (CardDisanceComparison(result.gameObject, temp.gameObject) == -1)
-                        {
-                            result = temp;
-                            Debug.Log($"new depth = {hit.depth}");
-                        }
-                            
+                        return result;
                     }
                 }
 
-                return result;
+                return null;
             }
         }
 
@@ -99,7 +77,8 @@ namespace Core.Drag
         {
             if (currentCard == null) return;
             // check drop panel
-
+            Debug.Log($"Finish touch with: {currentCard.name}");
+            currentCard.Animator.Glow(false);
             if (Raycast(_inputProvider.GetPosition(), hits) && HitDropPanel(out DropPanel panel))
             {
                 PlaceAtPanel(currentCard, panel);
@@ -139,11 +118,14 @@ namespace Core.Drag
         private void ReturnToDeck(Card card)
         {
             Debug.Log("Haven't hit panel");
+            _deck.ReturnCard(card);
         }
 
         private void PlaceAtPanel(Card card, DropPanel panel)
         {
-            Debug.Log($"Hit drop panel! - {panel.name}");
+            Debug.Log($"Place at panel {panel.name}");
+            panel.Add(card);
+            _deck.Remove(card);
         }
     }
 }
